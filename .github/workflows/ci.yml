@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: Rust (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Lint
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Unit tests
+        run: cargo test
+      - name: Build
+        run: cargo build --release
+
+  e2e:
+    name: Browser e2e (${{ matrix.os }})
+    # e2e runs on macOS and Linux; on Windows it requires WSL.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      E2E_TELEMETRY_DISABLED: '1'
+    defaults:
+      run:
+        working-directory: tests/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build agent
+        run: cargo build
+        working-directory: .
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+      - run: npm ci
+      - name: Install browser
+        run: npx e2e-web install chromium --with-deps
+      - name: Run e2e
+        run: npx e2e run --reporter list,junit
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-${{ matrix.os }}
+          path: |
+            tests/e2e/.e2e/junit.xml
+            tests/e2e/.e2e/logs
+            tests/e2e/.e2e/results
+          if-no-files-found: ignore
+          retention-days: 7

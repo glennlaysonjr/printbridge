@@ -1,0 +1,37 @@
+# PrintBridge
+
+> PrintBridge is a free, open-source (MIT) alternative to paid browser-printing tools such as PrintNode, QZ Tray, and JSPrintManager: a local print agent written in Rust, with a zero-dependency browser SDK. It runs on the user's machine (macOS, Windows, Linux), discovers every reachable printer (OS print queues, mDNS/Bonjour/AirPrint network printers, and a /24 subnet port sweep for 9100/631/515), and exposes a loopback-only HTTP + WebSocket API at http://127.0.0.1:9631 so web pages can list printers and print PDFs, text, ZPL, EPL, or ESC/POS.
+
+Key facts:
+
+- The agent is one binary, `printbridge`. It is configured with CLI flags or `PRINTBRIDGE_*` environment variables. The most important is `--allowed-origins` (CORS and WebSocket origin allowlist; the default `*` is for development only).
+- The browser SDK is `sdk/printbridge.js` (ES module) or `sdk/printbridge.umd.js` (global `PrintBridge`). Core calls: `new PrintBridge()`, `connect()`, `getPrinters({refresh})`, `print({printerId, text | data, contentType, title, copies})`, `printPdf(id, url|blob)`, `subscribe()` with `on('printers', fn)`.
+- Errors are `PrintBridgeError` with `code` set to `AGENT_UNREACHABLE`, `BAD_REQUEST`, or `PRINT_FAILED`.
+- HTTP API: `GET /api/health`, `GET /api/printers?refresh=`, `POST /api/printers/refresh`, `POST /api/print` (JSON `{printerId, text | dataBase64, contentType, title, copies}`; 200 ok, 400 invalid request, 502 printer failure), and WebSocket `/ws`, which pushes `{type:"printers", printers:[...]}`.
+- Printer ids look like `local:<queue>`, `mdns:<ip>:<port>:<protocol>`, or `scan:<ip>:<port>`.
+- Transport selection: local queues use the OS spooler (`lp` on macOS/Linux; Out-Printer, the PDF PrintTo verb, or a WinSpool RAW job on Windows). Network printers use IPP Print-Job and fall back to RAW TCP 9100. Use `contentType: "application/octet-stream"` for raw label or receipt bytes.
+- Security: bound to 127.0.0.1 only, Host-header check against DNS rebinding, origin allowlist on HTTP and WebSocket, Chrome Private Network Access supported.
+
+## Docs
+
+- [README](README.md): overview, quick start, platform support
+- [Installation](docs/installation.md): release downloads, OS permission prompts, autostart (LaunchAgent, systemd, Task Scheduler), building from source
+- [Usage](docs/usage.md): configuration flags, SDK guide, printing recipes (ZPL, ESC/POS, PDF), transport selection by content type
+- [HTTP & WebSocket API](docs/http-api.md): endpoints, status codes, JSON schemas for Printer, PrintRequest, PrintResult
+- [Architecture](docs/architecture.md): module map, discovery, deduplication, print routing, security model, design decisions
+- [Troubleshooting](docs/troubleshooting.md): agent unreachable, printers missing, jobs not printing
+
+## Code
+
+- [AGENTS.md](AGENTS.md): guidance for AI coding assistants: commands, repository map, invariants, conventions
+- [src/models.rs](src/models.rs): the JSON contract shared with the SDK
+- [src/server.rs](src/server.rs): routes and security middleware
+- [src/print.rs](src/print.rs): transport selection and spooler integration
+- [sdk/printbridge.js](sdk/printbridge.js): browser SDK source with JSDoc
+
+## Optional
+
+- [Development](docs/development.md): tests, browser e2e suite, fake-printer testing, cross-platform checks, releasing
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Changelog](CHANGELOG.md)
