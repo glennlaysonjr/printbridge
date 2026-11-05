@@ -1,6 +1,6 @@
 # PrintBridge
 
-> PrintBridge is a free, open-source (MIT) alternative to paid browser-printing tools such as PrintNode, QZ Tray, and JSPrintManager: a local print agent written in Rust, with a zero-dependency browser SDK. It runs on the user's machine (macOS, Windows, Linux), discovers every reachable printer (OS print queues, mDNS/Bonjour/AirPrint network printers, and a /24 subnet port sweep for 9100/631/515), and exposes a loopback-only HTTP + WebSocket API at http://127.0.0.1:9631 so web pages can list printers and print PDFs, text, ZPL, EPL, or ESC/POS.
+> PrintBridge is an open-source (MIT) alternative to paid browser-printing tools such as PrintNode, QZ Tray, and JSPrintManager: a local print agent written in Rust, with a zero-dependency browser SDK. It runs on the user's machine (macOS, Windows, Linux), discovers every reachable printer (OS print queues, mDNS/Bonjour/AirPrint network printers, and a /24 subnet port sweep for 9100/631/515), and exposes a loopback-only HTTP + WebSocket API at http://127.0.0.1:9631 so web pages can list printers and print PDFs, text, ZPL, EPL, or ESC/POS.
 
 Key facts:
 

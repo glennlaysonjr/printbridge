@@ -3,7 +3,7 @@
 [![CI](https://github.com/glennlaysonjr/printbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/glennlaysonjr/printbridge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**A free, open-source (MIT) alternative to paid browser-printing tools. Let any web app discover and print to every printer the user can reach, on macOS, Windows, and Linux.**
+**An open-source (MIT) alternative to paid browser-printing tools. Let any web app discover and print to every printer the user can reach, on macOS, Windows, and Linux.**
 
 PrintBridge is a small native agent (one Rust binary, no runtime to install) plus a
 zero-dependency browser SDK. The agent runs on the user's machine and exposes a
@@ -18,20 +18,20 @@ or cloud service.
 └────────────────┘                      └───────────────────────┘
 ```
 
-## Free alternative to paid print bridges
+## Open-source alternative to paid print bridges
 
 Printing silently from a web page to a label printer, receipt printer, or office printer usually
 means paying for a commercial print bridge or using a vendor tool that only supports one brand.
-PrintBridge does the same job for free, for any printer:
+PrintBridge does the same job as open-source software, for any printer:
 
 | Tool | Licensing / cost | Printers |
 |---|---|---|
 | PrintNode | Paid subscription; jobs go through its cloud service | Any |
 | QZ Tray | Open-source core; paid commercial support plans | Any |
 | Neodynamic JSPrintManager / WebClientPrint | Commercial license | Any |
-| Zebra Browser Print | Free, closed source | Zebra only |
-| DYMO Connect | Free, closed source | DYMO only |
-| **PrintBridge** | **Free, MIT licensed, open source** | **Any** |
+| Zebra Browser Print | No cost, closed source | Zebra only |
+| DYMO Connect | No cost, closed source | DYMO only |
+| **PrintBridge** | **Open source, MIT licensed** | **Any** |
 
 - **No license keys, accounts, or per-seat fees.** MIT licensed, so you can use it commercially,
   modify it, and ship it inside your own product.
